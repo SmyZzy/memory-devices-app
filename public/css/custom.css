@@ -1,0 +1,89 @@
+/* ===== ПОЛЬЗОВАТЕЛЬСКИЕ ФОНОВЫЕ ИЗОБРАЖЕНИЯ ===== */
+/*
+ * Инструкция:
+ * 1. Поместите свои изображения в папку public/images/
+ * 2. Скопируйте нужный блок ниже, раскомментируйте
+ * 3. Замените url('/images/...') на свой путь
+ * 4. Перезагрузите страницу (Ctrl+Shift+R)
+ *
+ * Если ничего не раскомментировано — остаётся стандартная тёмная тема
+ */
+
+/* ФОН ВСЕЙ СТРАНИЦЫ */
+/*
+body {
+  background: url('/images/body-bg.jpg') center/cover fixed no-repeat;
+}
+*/
+
+/* ФОН ШАПКИ САЙТА (navbar) */
+/*
+.navbar {
+  background: url('/images/navbar-bg.png') center/cover no-repeat;
+}
+*/
+
+/* ФОН ПОДВАЛА (footer) */
+/*
+footer {
+  background: url('/images/footer-bg.png') center/cover no-repeat;
+}
+*/
+
+/* ФОН ВСЕХ ТАБЛИЦ */
+/*
+table {
+  background: url('/images/table-bg.png') center/cover no-repeat;
+}
+*/
+
+/* ФОН ЗАГОЛОВКОВ ТАБЛИЦ */
+/*
+th {
+  background: url('/images/table-header-bg.png') center/cover no-repeat;
+}
+*/
+
+/* ФОН ОСНОВНЫХ КНОПОК */
+/*
+.btn-primary {
+  background: url('/images/btn-primary-bg.png') center/cover no-repeat;
+}
+*/
+
+/* ФОН ВТОРИЧНЫХ КНОПОК */
+/*
+.btn-secondary {
+  background: url('/images/btn-secondary-bg.png') center/cover no-repeat;
+}
+*/
+
+/* ФОН ВСЕХ КАРТОЧЕК (темы, формы, дашборд) */
+/*
+.feature-card, .topic-card, .card, .auth-form,
+.theory-content, .mini-test-section, .test-intro,
+.test-progress, .question-block, .edit-block,
+.page-header {
+  background: url('/images/card-bg.png') center/cover no-repeat;
+}
+*/
+
+/* ФОН HERO-БЛОКА НА ГЛАВНОЙ */
+/*
+.hero {
+  background: url('/images/hero-bg.png') center/cover no-repeat;
+}
+*/
+
+/*
+ * Подсказка: можно использовать не только url(),
+ * но и цвета / градиенты:
+ *
+ * body {
+ *   background: #1a1a2e;
+ * }
+ *
+ * .navbar {
+ *   background: linear-gradient(90deg, #667eea, #764ba2);
+ * }
+ */

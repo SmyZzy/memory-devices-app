@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тестирование — Запоминающие устройства ЭВМ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body>
+  <main class="container">
+    <section class="page-header">
+      <h1>Полное тестирование</h1>
+      <p>Тест по всем темам дисциплины «Запоминающие устройства ЭВМ»</p>
+    </section>
+    <div id="authWarning" class="message-info" style="display:none;">
+      <div class="message-icon">&#x26A0;</div>
+      <div class="message-content">
+        <h4>Результаты не будут сохранены</h4>
+        <p>Вы проходите тест без входа в систему. Ваши баллы не будут записаны в личный кабинет. <a href="/login.html">Войти</a></p>
+      </div>
+    </div>
+    <div id="testIntro" class="test-intro">
+      <h3>Правила тестирования</h3>
+      <ul>
+        <li>Тест содержит минимум 20 вопросов по всем темам</li>
+        <li>Вопросы отображаются в случайном порядке</li>
+        <li>Каждый вопрос имеет 4 варианта ответа</li>
+        <li>Результат будет показан после завершения теста</li>
+      </ul>
+      <button onclick="startTest()" class="btn btn-primary btn-lg">Начать тест</button>
+    </div>
+    <div id="testContainer" style="display:none;">
+      <div class="test-progress" id="testProgress"></div>
+      <div id="questionsList"></div>
+      <button onclick="submitFullTest()" class="btn btn-primary btn-lg" id="submitBtn">Завершить тест</button>
+    </div>
+    <div id="testResult" style="display:none;"></div>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2024-2026 Архитектура аппаратных средств.</p>
+    </div>
+  </footer>
+  <script src="/js/main.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    let testQuestions = [];
+    let isAuthorized = false;
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        const data = await res.json();
+        if (data.user) {
+          isAuthorized = true;
+        } else {
+          document.getElementById('authWarning').style.display = 'flex';
+        }
+      } catch {
+        document.getElementById('authWarning').style.display = 'flex';
+      }
+    }
+
+    async function startTest() {
+      try {
+        const res = await fetch('/api/test/full');
+        const data = await res.json();
+        testQuestions = data.questions || [];
+        if (testQuestions.length === 0) {
+          alert('Вопросы для тестирования не найдены');
+          return;
+        }
+        document.getElementById('testIntro').style.display = 'none';
+        document.getElementById('testContainer').style.display = 'block';
+        renderQuestions();
+      } catch (err) {
+        alert('Необходимо войти в систему');
+        window.location.href = '/login.html';
+      }
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById('questionsList');
+      container.innerHTML = testQuestions.map((q, i) => `
+        <div class="question-block">
+          <p><strong>Вопрос ${i + 1}. ${q.question}</strong></p>
+          <label><input type="radio" name="fq_${q.id}" value="A"> A) ${q.option_a}</label>
+          <label><input type="radio" name="fq_${q.id}" value="B"> B) ${q.option_b}</label>
+          <label><input type="radio" name="fq_${q.id}" value="C"> C) ${q.option_c}</label>
+          <label><input type="radio" name="fq_${q.id}" value="D"> D) ${q.option_d}</label>
+        </div>
+      `).join('');
+      document.getElementById('testProgress').textContent = `Вопросов: ${testQuestions.length}`;
+    }
+
+    async function submitFullTest() {
+      const answers = {};
+      testQuestions.forEach(q => {
+        const selected = document.querySelector(`input[name="fq_${q.id}"]:checked`);
+        if (selected) answers[q.id] = selected.value;
+      });
+
+      const answered = Object.keys(answers).length;
+      if (answered < testQuestions.length) {
+        if (!confirm(`Вы ответили на ${answered} из ${testQuestions.length} вопросов. Завершить тест?`)) return;
+      }
+
+      try {
+        const res = await fetch('/api/test/full/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers })
+        });
+        if (res.status === 401) {
+          showSubmitWarning();
+          return;
+        }
+        const data = await res.json();
+        document.getElementById('testContainer').style.display = 'none';
+        document.getElementById('testResult').style.display = 'block';
+        document.getElementById('testResult').innerHTML = `
+          <div class="result-box ${data.percentage >= 50 ? 'success' : 'fail'}">
+            <h2>Результат тестирования</h2>
+            <p class="score-display">${data.score} из ${data.total} (${data.percentage.toFixed(1)}%)</p>
+            ${data.percentage >= 80 ? '<p class="grade">Отлично!</p>' :
+              data.percentage >= 60 ? '<p class="grade">Хорошо</p>' :
+              data.percentage >= 50 ? '<p class="grade">Удовлетворительно</p>' :
+              '<p class="grade">Неудовлетворительно</p>'}
+            <a href="/test.html" class="btn btn-primary">Пройти заново</a>
+            <a href="/student.html" class="btn btn-secondary">В личный кабинет</a>
+          </div>`;
+      } catch (err) {
+        showSubmitWarning();
+      }
+    }
+
+    function showSubmitWarning() {
+      document.getElementById('testContainer').style.display = 'none';
+      document.getElementById('testResult').style.display = 'block';
+      document.getElementById('testResult').innerHTML = `
+        <div class="message-info standalone-msg">
+          <div class="message-icon">&#x26A0;</div>
+          <div class="message-content">
+            <h4>Результат не сохранён</h4>
+            <p>Для записи результатов в систему необходимо войти в аккаунт.</p>
+            <div style="margin-top:1rem; display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap;">
+              <a href="/login.html" class="btn btn-primary">Войти</a>
+              <a href="/test.html" class="btn btn-secondary">Пройти заново</a>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    checkAuth();
+  </script>
+</body>
+</html>

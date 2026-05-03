@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация — Запоминающие устройства ЭВМ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="logo">&#x1F4BE; ЗУ ЭВМ</a>
+      <div class="nav-links">
+        <a href="/">Главная</a>
+        <a href="/theory">Теория</a>
+        <a href="/login.html" class="btn btn-sm btn-outline">Войти</a>
+      </div>
+    </div>
+  </nav>
+  <main class="container">
+    <div class="auth-form">
+      <div class="auth-icon">&#x1F4DD;</div>
+      <h2>Регистрация</h2>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="lastName">Фамилия</label>
+          <input type="text" id="lastName" name="lastName" placeholder="Иванов" required>
+        </div>
+        <div class="form-group">
+          <label for="firstName">Имя</label>
+          <input type="text" id="firstName" name="firstName" placeholder="Иван" required>
+        </div>
+        <div class="form-group">
+          <label for="middleName">Отчество</label>
+          <input type="text" id="middleName" name="middleName" placeholder="Иванович">
+        </div>
+        <div class="form-group">
+          <label for="username">Логин</label>
+          <input type="text" id="username" name="username" placeholder="Придумайте логин" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">Пароль</label>
+          <input type="password" id="password" name="password" placeholder="Минимум 8 символов" required minlength="8" autocomplete="new-password">
+          <small>Минимум 8 символов</small>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Подтверждение пароля</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Повторите пароль" required minlength="8" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label for="group">Группа</label>
+          <select id="group" name="group">
+            <option value="">Не указана</option>
+          </select>
+        </div>
+        <div id="registerError" class="error-message"></div>
+        <div id="registerSuccess" class="success-message"></div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <span class="btn-icon">&#x279C;</span>
+          Зарегистрироваться
+        </button>
+      </form>
+      <p class="auth-hint">Уже есть аккаунт? <a href="/login.html">Войти</a></p>
+    </div>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2024-2026 Архитектура аппаратных средств.</p>
+    </div>
+  </footer>
+  <script src="/js/main.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    async function loadGroups() {
+      try {
+        const res = await fetch('/api/auth/groups');
+        const data = await res.json();
+        const select = document.getElementById('group');
+        if (data.groups) {
+          data.groups.forEach(g => {
+            const opt = document.createElement('option');
+            opt.value = g.id;
+            opt.textContent = g.name;
+            select.appendChild(opt);
+          });
+        }
+      } catch {
+        console.error('Не удалось загрузить группы');
+      }
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorDiv = document.getElementById('registerError');
+      const successDiv = document.getElementById('registerSuccess');
+      errorDiv.textContent = '';
+      successDiv.textContent = '';
+
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      if (password.length < 8) {
+        errorDiv.textContent = 'Пароль должен содержать минимум 8 символов';
+        return;
+      }
+
+      if (password !== confirm) {
+        errorDiv.textContent = 'Пароли не совпадают';
+        return;
+      }
+
+      const username = document.getElementById('username').value.trim();
+      if (!username) {
+        errorDiv.textContent = 'Введите логин';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+            first_name: document.getElementById('firstName').value.trim(),
+            last_name: document.getElementById('lastName').value.trim(),
+            middle_name: document.getElementById('middleName').value.trim() || null,
+            group_id: document.getElementById('group').value ? parseInt(document.getElementById('group').value) : null
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          successDiv.textContent = 'Регистрация успешна! Перенаправление...';
+          setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+        } else {
+          errorDiv.textContent = data.error;
+        }
+      } catch (err) {
+        errorDiv.textContent = 'Ошибка подключения';
+      }
+    });
+
+    loadGroups();
+  </script>
+</body>
+</html>

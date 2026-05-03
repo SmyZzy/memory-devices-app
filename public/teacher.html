@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кабинет преподавателя — Запоминающие устройства ЭВМ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body>
+  <main class="container">
+    <section class="page-header">
+      <h1>Кабинет преподавателя</h1>
+    </section>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <h3>Мои данные</h3>
+        <div id="profileInfo">Загрузка...</div>
+        <button onclick="showEditProfile()" class="btn btn-sm btn-secondary">Редактировать</button>
+        <div id="editProfileForm" style="display:none; margin-top:1rem;">
+          <input type="text" id="editLastName" placeholder="Фамилия" class="input-field">
+          <input type="text" id="editFirstName" placeholder="Имя" class="input-field">
+          <input type="text" id="editMiddleName" placeholder="Отчество" class="input-field">
+          <button onclick="saveProfile()" class="btn btn-sm btn-primary">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('stats')">Статистика</button>
+      <button class="tab-btn" onclick="showTab('accounts')">Аккаунты</button>
+      <button class="tab-btn" onclick="showTab('theory')">Редактирование теории</button>
+      <button class="tab-btn" onclick="showTab('tests')">Редактирование тестов</button>
+      <button class="tab-btn" onclick="showTab('mini-tests')">Редактирование мини-тестов</button>
+    </div>
+
+    <div id="tab-stats" class="tab-content">
+      <div class="card">
+        <h3>Статистика тестирования студентов</h3>
+        <div class="filters">
+          <select id="filterGroup"><option value="">Все группы</option></select>
+          <select id="filterSort">
+            <option value="completed_at">По дате</option>
+            <option value="percentage">По баллам</option>
+            <option value="group_name">По группе</option>
+            <option value="score">По результату</option>
+          </select>
+          <select id="filterOrder">
+            <option value="DESC">По убыванию</option>
+            <option value="ASC">По возрастанию</option>
+          </select>
+          <button onclick="loadStatistics()" class="btn btn-sm btn-primary">Применить</button>
+        </div>
+        <div id="statsTable">Загрузка...</div>
+      </div>
+    </div>
+
+    <div id="tab-accounts" class="tab-content" style="display:none;">
+      <div class="card">
+        <h3>Генерация аккаунтов для студентов</h3>
+        <div class="form-row">
+          <select id="genGroup"><option value="">Выберите группу</option></select>
+          <input type="number" id="genCount" placeholder="Кол-во" min="1" max="100" class="input-field" style="width:120px;">
+          <input type="text" id="genPrefix" placeholder="Префикс" value="stud" class="input-field" style="width:120px;">
+          <button onclick="generateAccounts()" class="btn btn-sm btn-primary">Генерировать</button>
+        </div>
+        <div id="generatedAccounts"></div>
+      </div>
+      <div class="card">
+        <h3>Список студентов</h3>
+        <div id="studentsList">Загрузка...</div>
+      </div>
+    </div>
+
+    <div id="tab-theory" class="tab-content" style="display:none;">
+      <div class="card">
+        <h3>Редактирование теории</h3>
+        <div id="theoryEditList">Загрузка...</div>
+      </div>
+    </div>
+
+    <div id="tab-tests" class="tab-content" style="display:none;">
+      <div class="card">
+        <h3>Редактирование вопросов полного теста</h3>
+        <div id="fullTestEditList">Загрузка...</div>
+        <hr>
+        <h4>Добавить вопрос</h4>
+        <div id="addQuestionForm">
+          <input type="text" id="newQ" placeholder="Вопрос" class="input-field">
+          <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newA" placeholder="Вариант A" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newB" placeholder="Вариант B" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newC" placeholder="Вариант C" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newD" placeholder="Вариант D" class="input-field opt-input"></div>
+          <div class="opt-row">
+            <span class="opt-label ok-label">OK</span>
+            <select id="newCorrect" class="input-field opt-input">
+              <option value="A">A правильный</option>
+              <option value="B">B правильный</option>
+              <option value="C">C правильный</option>
+              <option value="D">D правильный</option>
+            </select>
+          </div>
+          <button onclick="addQuestion()" class="btn btn-sm btn-primary">Добавить</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-mini-tests" class="tab-content" style="display:none;">
+      <div class="card">
+        <h3>Редактирование мини-тестов</h3>
+        <div class="form-group mt-3">
+          <label for="miniTestTopic">Выберите тему:</label>
+          <select class="form-control" id="miniTestTopic">
+            <option value="">Загрузка тем...</option>
+          </select>
+        </div>
+        <button class="btn btn-primary mb-3" id="addMiniTestBtn">Добавить новый вопрос</button>
+        <div id="miniTestsList"></div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2024-2026 Архитектура аппаратных средств.</p>
+    </div>
+  </footer>
+  <script src="/js/main.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/teacher/profile');
+        const data = await res.json();
+        if (data.user) {
+          const u = data.user;
+          document.getElementById('profileInfo').innerHTML = `
+            <p><strong>ФИО:</strong> ${u.last_name} ${u.first_name} ${u.middle_name}</p>
+            <p><strong>Логин:</strong> ${u.username}</p>`;
+          document.getElementById('editLastName').value = u.last_name;
+          document.getElementById('editFirstName').value = u.first_name;
+          document.getElementById('editMiddleName').value = u.middle_name;
+        }
+      } catch {
+        window.location.href = '/login.html';
+      }
+    }
+
+    async function loadGroups() {
+      const res = await fetch('/api/teacher/groups');
+      const data = await res.json();
+      const opts = data.groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+      document.getElementById('filterGroup').innerHTML = '<option value="">Все группы</option>' + opts;
+      document.getElementById('genGroup').innerHTML = '<option value="">Выберите группу</option>' + opts;
+    }
+
+    async function loadStatistics() {
+      const groupId = document.getElementById('filterGroup').value;
+      const sortBy = document.getElementById('filterSort').value;
+      const sortOrder = document.getElementById('filterOrder').value;
+      let url = `/api/teacher/statistics?sort_by=${sortBy}&sort_order=${sortOrder}`;
+      if (groupId) url += `&group_id=${groupId}`;
+      
+      const res = await fetch(url);
+      const data = await res.json();
+      const container = document.getElementById('statsTable');
+      if (!data.results || data.results.length === 0) {
+        container.innerHTML = '<p>Нет результатов</p>';
+        return;
+      }
+      container.innerHTML = `
+        <table>
+          <thead><tr><th>Студент</th><th>Группа</th><th>Тип</th><th>Тема</th><th>Результат</th><th>Процент</th><th>Дата</th></tr></thead>
+          <tbody>${data.results.map(r => `
+            <tr>
+              <td>${r.last_name} ${r.first_name}</td>
+              <td>${r.group_name}</td>
+              <td>${r.test_type === 'mini' ? 'Мини' : 'Полный'}</td>
+              <td>${r.topic_title || '—'}</td>
+              <td>${r.score}/${r.total_questions}</td>
+              <td>${parseFloat(r.percentage).toFixed(1)}%</td>
+              <td>${new Date(r.completed_at).toLocaleDateString('ru')}</td>
+            </tr>`).join('')}</tbody>
+        </table>`;
+    }
+
+    async function loadStudents() {
+      const res = await fetch('/api/teacher/students');
+      const data = await res.json();
+      const container = document.getElementById('studentsList');
+      if (!data.students || data.students.length === 0) {
+        container.innerHTML = '<p>Нет студентов</p>';
+        return;
+      }
+      container.innerHTML = `
+        <table>
+          <thead><tr><th>Логин</th><th>ФИО</th><th>Группа</th><th>Действие</th></tr></thead>
+          <tbody>${data.students.map(s => `
+            <tr>
+              <td>${s.username}</td>
+              <td>${s.last_name} ${s.first_name} ${s.middle_name}</td>
+              <td>${s.group_name}</td>
+              <td><button onclick="deleteStudent(${s.id})" class="btn btn-sm btn-danger">Удалить</button></td>
+            </tr>`).join('')}</tbody>
+        </table>`;
+    }
+
+    async function generateAccounts() {
+      const groupId = document.getElementById('genGroup').value;
+      const count = document.getElementById('genCount').value;
+      const prefix = document.getElementById('genPrefix').value;
+      if (!groupId || !count) return alert('Заполните все поля');
+      
+      const res = await fetch('/api/teacher/generate-accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ group_id: groupId, count: parseInt(count), password_prefix: prefix })
+      });
+      const data = await res.json();
+      const container = document.getElementById('generatedAccounts');
+      if (data.generated) {
+        container.innerHTML = `
+          <h4>Сгенерированные аккаунты (${data.generated.length}):</h4>
+          <table>
+            <thead><tr><th>Логин</th><th>Пароль</th></tr></thead>
+            <tbody>${data.generated.map(a => `<tr><td>${a.username}</td><td><code>${a.password}</code></td></tr>`).join('')}</tbody>
+          </table>
+          <button onclick="copyAccounts()" class="btn btn-sm btn-secondary">Копировать все</button>`;
+        loadStudents();
+      }
+    }
+
+    function copyAccounts() {
+      const rows = document.querySelectorAll('#generatedAccounts table tbody tr');
+      let text = '';
+      rows.forEach(r => { text += r.cells[0].textContent + ' / ' + r.cells[1].textContent + '\n'; });
+      navigator.clipboard.writeText(text);
+      alert('Скопировано!');
+    }
+
+    async function deleteStudent(id) {
+      if (!confirm('Удалить студента?')) return;
+      await fetch(`/api/teacher/account/${id}`, { method: 'DELETE' });
+      loadStudents();
+    }
+
+    function showEditProfile() {
+      document.getElementById('editProfileForm').style.display = 'block';
+    }
+
+    async function saveProfile() {
+      await fetch('/api/teacher/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          last_name: document.getElementById('editLastName').value,
+          first_name: document.getElementById('editFirstName').value,
+          middle_name: document.getElementById('editMiddleName').value
+        })
+      });
+      loadProfile();
+    }
+
+    function showTab(name) {
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + name).style.display = 'block';
+      event.target.classList.add('active');
+      if (name === 'theory') loadTheoryEdit();
+      if (name === 'tests') loadFullTestEdit();
+      if (name === 'mini-tests') loadMiniTestTopics();
+    }
+
+    async function loadTheoryEdit() {
+      const res = await fetch('/api/teacher/theory-topics');
+      const data = await res.json();
+      const container = document.getElementById('theoryEditList');
+      container.innerHTML = data.topics.map(t => `
+        <div class="edit-block">
+          <h4>${t.title}</h4>
+          <input type="text" value="${escapeHtml(t.title)}" id="tt_${t.id}_title" class="input-field">
+          <textarea id="tt_${t.id}_content" rows="6" class="input-field">${escapeHtml(t.short_content || '')}</textarea>
+          <input type="text" value="${escapeHtml(t.file_path || '')}" id="tt_${t.id}_file" placeholder="Путь к файлу (/files/имя.pdf)" class="input-field">
+          <button onclick="saveTheory(${t.id})" class="btn btn-sm btn-primary">Сохранить</button>
+        </div>`).join('');
+    }
+
+    async function saveTheory(id) {
+      await fetch(`/api/teacher/theory-topics/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: document.getElementById(`tt_${id}_title`).value,
+          short_content: document.getElementById(`tt_${id}_content`).value,
+          file_path: document.getElementById(`tt_${id}_file`).value
+        })
+      });
+      alert('Сохранено');
+    }
+
+    async function loadFullTestEdit() {
+      const res = await fetch('/api/teacher/full-tests');
+      const data = await res.json();
+      const container = document.getElementById('fullTestEditList');
+      container.innerHTML = data.questions.map(q => `
+        <div class="edit-block">
+          <p><strong>Q${q.id}:</strong> ${escapeHtml(q.question.substring(0, 80))}...</p>
+          <input type="text" value="${escapeHtml(q.question)}" id="ft_${q.id}_q" class="input-field" placeholder="Вопрос">
+          <div class="opt-row"><span class="opt-label">A</span><input type="text" value="${escapeHtml(q.option_a)}" id="ft_${q.id}_a" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">B</span><input type="text" value="${escapeHtml(q.option_b)}" id="ft_${q.id}_b" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">C</span><input type="text" value="${escapeHtml(q.option_c)}" id="ft_${q.id}_c" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">D</span><input type="text" value="${escapeHtml(q.option_d)}" id="ft_${q.id}_d" class="input-field opt-input"></div>
+          <div class="opt-row">
+            <span class="opt-label ok-label">OK</span>
+            <select id="ft_${q.id}_cor" class="input-field opt-input">
+              <option value="A" ${q.correct_answer==='A'?'selected':''}>A правильный</option>
+              <option value="B" ${q.correct_answer==='B'?'selected':''}>B правильный</option>
+              <option value="C" ${q.correct_answer==='C'?'selected':''}>C правильный</option>
+              <option value="D" ${q.correct_answer==='D'?'selected':''}>D правильный</option>
+            </select>
+          </div>
+          <button onclick="saveQuestion(${q.id})" class="btn btn-sm btn-primary">Сохранить</button>
+          <button onclick="deleteQuestion(${q.id})" class="btn btn-sm btn-danger">Удалить</button>
+        </div>`).join('');
+    }
+
+    async function saveQuestion(id) {
+      await fetch(`/api/teacher/full-tests/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: document.getElementById(`ft_${id}_q`).value,
+          option_a: document.getElementById(`ft_${id}_a`).value,
+          option_b: document.getElementById(`ft_${id}_b`).value,
+          option_c: document.getElementById(`ft_${id}_c`).value,
+          option_d: document.getElementById(`ft_${id}_d`).value,
+          correct_answer: document.getElementById(`ft_${id}_cor`).value
+        })
+      });
+      alert('Сохранено');
+    }
+
+    async function deleteQuestion(id) {
+      if (!confirm('Удалить вопрос?')) return;
+      await fetch(`/api/teacher/full-tests/${id}`, { method: 'DELETE' });
+      loadFullTestEdit();
+    }
+
+    async function addQuestion() {
+      const question = document.getElementById('newQ').value;
+      const option_a = document.getElementById('newA').value;
+      const option_b = document.getElementById('newB').value;
+      const option_c = document.getElementById('newC').value;
+      const option_d = document.getElementById('newD').value;
+      const correct_answer = document.getElementById('newCorrect').value;
+      if (!question || !option_a || !option_b || !option_c || !option_d) return alert('Заполните все поля');
+      await fetch('/api/teacher/full-tests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, option_a, option_b, option_c, option_d, correct_answer })
+      });
+      document.getElementById('newQ').value = '';
+      document.getElementById('newA').value = '';
+      document.getElementById('newB').value = '';
+      document.getElementById('newC').value = '';
+      document.getElementById('newD').value = '';
+      loadFullTestEdit();
+    }
+
+    // --- Мини-тесты ---
+    async function loadMiniTestTopics() {
+      try {
+        const res = await fetch('/api/teacher/theory-topics');
+        const topics = await res.json();
+        const select = document.getElementById('miniTestTopic');
+        select.innerHTML = topics.topics.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+        if (topics.topics.length > 0) loadMiniTests(topics.topics[0].id);
+      } catch (err) {
+        console.error('Ошибка загрузки тем:', err);
+      }
+    }
+
+    async function loadMiniTests(topicId) {
+      try {
+        const res = await fetch(`/api/teacher/mini-tests/${topicId}`);
+        const data = await res.json();
+        const container = document.getElementById('miniTestsList');
+        container.innerHTML = '';
+        if (!data.questions || data.questions.length === 0) {
+          container.innerHTML = '<p class="text-muted">Нет вопросов для этой темы</p>';
+          return;
+        }
+        data.questions.forEach(q => {
+          const div = document.createElement('div');
+          div.className = 'edit-block';
+          div.innerHTML = `
+            <p><strong>Вопрос #${q.id}:</strong> ${q.question}</p>
+            <p>Варианты: A) ${q.option_a} B) ${q.option_b} C) ${q.option_c} D) ${q.option_d}</p>
+            <p><strong>Правильный:</strong> ${q.correct_answer}</p>
+            <button class="btn btn-sm btn-warning" onclick="editMiniTest(${q.id})">Редактировать</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteMiniTest(${q.id})">Удалить</button>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error('Ошибка загрузки мини-тестов:', err);
+      }
+    }
+
+    document.getElementById('miniTestTopic').addEventListener('change', (e) => {
+      loadMiniTests(e.target.value);
+    });
+
+    document.getElementById('addMiniTestBtn').addEventListener('click', async () => {
+      const topicId = document.getElementById('miniTestTopic').value;
+      const question = prompt('Введите вопрос:');
+      if (!question) return;
+      const optionA = prompt('Вариант A:');
+      const optionB = prompt('Вариант B:');
+      const optionC = prompt('Вариант C:');
+      const optionD = prompt('Вариант D:');
+      const correctOption = prompt('Правильный вариант (A/B/C/D):');
+      if (!optionA || !optionB || !optionC || !optionD || !correctOption) {
+        alert('Заполните все варианты');
+        return;
+      }
+      try {
+        const res = await fetch('/api/teacher/mini-tests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            topic_id: topicId,
+            question,
+            option_a: optionA,
+            option_b: optionB,
+            option_c: optionC,
+            option_d: optionD,
+            correct_answer: correctOption
+          })
+        });
+        if (res.ok) {
+          alert('Вопрос добавлен');
+          loadMiniTests(topicId);
+        }
+      } catch (err) {
+        console.error('Ошибка добавления:', err);
+      }
+    });
+
+    async function editMiniTest(id) {
+      try {
+        const res = await fetch(`/api/teacher/mini-tests/${id}`);
+        const q = await res.json();
+        const question = prompt('Редактировать вопрос:', q.question);
+        if (!question) return;
+        const optionA = prompt('Редактировать вариант A:', q.option_a);
+        const optionB = prompt('Редактировать вариант B:', q.option_b);
+        const optionC = prompt('Редактировать вариант C:', q.option_c);
+        const optionD = prompt('Редактировать вариант D:', q.option_d);
+        const correctOption = prompt('Редактировать правильный вариант (A/B/C/D):', q.correct_answer);
+        const updateRes = await fetch(`/api/teacher/mini-tests/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            topic_id: q.topic_id,
+            question,
+            option_a: optionA,
+            option_b: optionB,
+            option_c: optionC,
+            option_d: optionD,
+            correct_answer: correctOption
+          })
+        });
+        if (updateRes.ok) {
+          alert('Вопрос обновлен');
+          loadMiniTests(q.topic_id);
+        }
+      } catch (err) {
+        console.error('Ошибка редактирования:', err);
+      }
+    }
+
+    async function deleteMiniTest(id) {
+      if (!confirm('Удалить этот вопрос?')) return;
+      try {
+        const res = await fetch(`/api/teacher/mini-tests/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          alert('Вопрос удален');
+          const topicId = document.getElementById('miniTestTopic').value;
+          loadMiniTests(topicId);
+        }
+      } catch (err) {
+        console.error('Ошибка удаления:', err);
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    loadProfile();
+    loadGroups();
+    loadStatistics();
+    loadStudents();
+  </script>
+</body>
+</html>

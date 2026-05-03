@@ -1,0 +1,24 @@
+{
+  "name": "memory-devices-app",
+  "version": "1.0.0",
+  "description": "Компьютерное сопровождение дисциплины «Архитектура аппаратных средств» по теме «Запоминающие устройства ЭВМ»",
+  "main": "server.js",
+  "scripts": {
+    "db:init": "node database/init.js",
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "mysql2": "^3.22.3",
+    "uuid": "^14.0.0"
+  }
+}
