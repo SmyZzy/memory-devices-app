@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Теория — Запоминающие устройства ЭВМ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body>
+  <main class="container">
+    <section class="page-header">
+      <h1 id="topicTitle">Загрузка...</h1>
+    </section>
+    <div class="theory-content">
+      <div id="topicContent" class="content-box"></div>
+      <div class="file-download" id="fileDownload"></div>
+    </div>
+    <section class="mini-test-section">
+      <h2>Мини-тест</h2>
+      <p>Проверьте свои знания по этой теме</p>
+      <div id="miniTestContainer"></div>
+      <div id="miniTestResult"></div>
+    </section>
+    <div class="back-link">
+      <a href="/theory.html" class="btn btn-secondary">← К списку тем</a>
+    </div>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2024-2026 Архитектура аппаратных средств.</p>
+    </div>
+  </footer>
+  <script src="/js/main.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const topicId = params.get('id');
+    let miniQuestions = [];
+
+    async function loadTopic() {
+      try {
+        const res = await fetch(`/api/theory/${topicId}`);
+        const data = await res.json();
+        if (data.topic) {
+          document.getElementById('topicTitle').textContent = data.topic.title;
+          document.getElementById('topicContent').innerHTML = data.topic.short_content;
+          if (data.topic.file_path) {
+            document.getElementById('fileDownload').innerHTML =
+              `<a href="${data.topic.file_path}" target="_blank" class="btn btn-primary">📄 Скачать полный текст темы</a>`;
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadMiniTest() {
+      try {
+        const res = await fetch(`/api/theory/${topicId}/mini-test`);
+        const data = await res.json();
+        miniQuestions = data.questions || [];
+        const container = document.getElementById('miniTestContainer');
+        if (miniQuestions.length === 0) {
+          container.innerHTML = '<p>Мини-тест пока не создан для этой темы</p>';
+          return;
+        }
+        container.innerHTML = miniQuestions.map((q, i) => `
+          <div class="question-block">
+            <p><strong>${i + 1}. ${q.question}</strong></p>
+            <label><input type="radio" name="q_${q.id}" value="A"> ${q.option_a}</label>
+            <label><input type="radio" name="q_${q.id}" value="B"> ${q.option_b}</label>
+            <label><input type="radio" name="q_${q.id}" value="C"> ${q.option_c}</label>
+            <label><input type="radio" name="q_${q.id}" value="D"> ${q.option_d}</label>
+          </div>
+        `).join('') + '<button onclick="submitMiniTest()" class="btn btn-primary">Отправить</button>';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function submitMiniTest() {
+      const answers = {};
+      miniQuestions.forEach(q => {
+        const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+        if (selected) answers[q.id] = selected.value;
+      });
+
+      if (Object.keys(answers).length < miniQuestions.length) {
+        alert('Ответьте на все вопросы');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/test/mini/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topicId, answers })
+        });
+        const data = await res.json();
+        document.getElementById('miniTestResult').innerHTML =
+          `<div class="result-box ${data.percentage >= 50 ? 'success' : 'fail'}">
+            <h3>Результат: ${data.score}/${data.total} (${data.percentage.toFixed(1)}%)</h3>
+            ${data.percentage >= 50 ? '<p>Хороший результат!</p>' : '<p>Рекомендуем перечитать тему</p>'}
+          </div>`;
+        document.getElementById('miniTestContainer').innerHTML = '';
+      } catch (err) {
+        alert('Необходимо войти в систему для прохождения теста');
+        window.location.href = '/login.html';
+      }
+    }
+
+    if (topicId) {
+      loadTopic();
+      loadMiniTest();
+    } else {
+      document.getElementById('topicTitle').textContent = 'Тема не выбрана';
+      window.location.href = '/theory.html';
+    }
+  </script>
+</body>
+</html>

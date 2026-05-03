@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кабинет студента — Запоминающие устройства ЭВМ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body>
+  <main class="container">
+    <section class="page-header">
+      <h1>Личный кабинет студента</h1>
+    </section>
+    <div class="dashboard-grid">
+      <div class="card">
+        <h3>Мои данные</h3>
+        <div id="profileInfo">Загрузка...</div>
+        <button onclick="showEditProfile()" class="btn btn-sm btn-secondary">Редактировать</button>
+        <div id="editProfileForm" style="display:none; margin-top:1rem;">
+          <input type="text" id="editLastName" placeholder="Фамилия" class="input-field">
+          <input type="text" id="editFirstName" placeholder="Имя" class="input-field">
+          <input type="text" id="editMiddleName" placeholder="Отчество" class="input-field">
+          <button onclick="saveProfile()" class="btn btn-sm btn-primary">Сохранить</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Смена пароля</h3>
+        <input type="password" id="currentPassword" placeholder="Текущий пароль" class="input-field">
+        <input type="password" id="newPassword" placeholder="Новый пароль (мин. 8 символов)" class="input-field">
+        <button onclick="changePassword()" class="btn btn-sm btn-secondary">Сменить пароль</button>
+        <div id="passwordMsg"></div>
+      </div>
+    </div>
+    <section class="card">
+      <h3>Мои результаты тестирования</h3>
+      <div id="resultsTable">Загрузка...</div>
+    </section>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2024-2026 Архитектура аппаратных средств.</p>
+    </div>
+  </footer>
+  <script src="/js/main.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/student/profile');
+        const data = await res.json();
+        if (data.user) {
+          const u = data.user;
+          document.getElementById('profileInfo').innerHTML = `
+            <p><strong>ФИО:</strong> ${u.last_name} ${u.first_name} ${u.middle_name}</p>
+            <p><strong>Логин:</strong> ${u.username}</p>
+            <p><strong>Группа:</strong> ${u.group_name || '—'}</p>
+            <p><strong>Дата регистрации:</strong> ${new Date(u.created_at).toLocaleDateString('ru')}</p>`;
+          document.getElementById('editLastName').value = u.last_name;
+          document.getElementById('editFirstName').value = u.first_name;
+          document.getElementById('editMiddleName').value = u.middle_name;
+        }
+      } catch (err) {
+        window.location.href = '/login.html';
+      }
+    }
+
+    async function loadResults() {
+      try {
+        const res = await fetch('/api/student/results');
+        const data = await res.json();
+        const container = document.getElementById('resultsTable');
+        if (data.results.length === 0) {
+          container.innerHTML = '<p>Результатов пока нет</p>';
+          return;
+        }
+        container.innerHTML = `
+          <table>
+            <thead><tr><th>Дата</th><th>Тип</th><th>Тема</th><th>Результат</th><th>Процент</th></tr></thead>
+            <tbody>${data.results.map(r => `
+              <tr>
+                <td>${new Date(r.completed_at).toLocaleDateString('ru')}</td>
+                <td>${r.test_type === 'mini' ? 'Мини-тест' : 'Полный тест'}</td>
+                <td>${r.topic_title || '—'}</td>
+                <td>${r.score}/${r.total_questions}</td>
+                <td>${parseFloat(r.percentage).toFixed(1)}%</td>
+              </tr>`).join('')}</tbody>
+          </table>`;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function showEditProfile() {
+      document.getElementById('editProfileForm').style.display = 'block';
+    }
+
+    async function saveProfile() {
+      try {
+        await fetch('/api/student/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            last_name: document.getElementById('editLastName').value,
+            first_name: document.getElementById('editFirstName').value,
+            middle_name: document.getElementById('editMiddleName').value
+          })
+        });
+        loadProfile();
+      } catch (err) {
+        alert('Ошибка сохранения');
+      }
+    }
+
+    async function changePassword() {
+      const current = document.getElementById('currentPassword').value;
+      const newPass = document.getElementById('newPassword').value;
+      const msg = document.getElementById('passwordMsg');
+      msg.textContent = '';
+      msg.className = '';
+
+      if (newPass.length < 8) {
+        msg.textContent = 'Новый пароль должен содержать минимум 8 символов';
+        msg.className = 'error-message';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/student/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ current_password: current, new_password: newPass })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          msg.textContent = 'Пароль успешно изменён';
+          msg.className = 'success-message';
+        } else {
+          msg.textContent = data.error;
+          msg.className = 'error-message';
+        }
+      } catch (err) {
+        msg.textContent = 'Ошибка';
+        msg.className = 'error-message';
+      }
+    }
+
+    loadProfile();
+    loadResults();
+  </script>
+</body>
+</html>

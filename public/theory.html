@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Теория — Запоминающие устройства ЭВМ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body>
+  <main class="container">
+    <section class="page-header">
+      <h1>Теория — Запоминающие устройства ЭВМ</h1>
+      <p>Выберите тему для изучения</p>
+    </section>
+    <div id="topicsList" class="topic-list"></div>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2024-2026 Архитектура аппаратных средств.</p>
+    </div>
+  </footer>
+  <script src="/js/main.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    async function loadTopics() {
+      try {
+        const res = await fetch('/api/theory/topics');
+        const data = await res.json();
+        const container = document.getElementById('topicsList');
+        if (data.topics) {
+          container.innerHTML = data.topics.map(t =>
+            `<div class="topic-card">
+              <h3>${t.title}</h3>
+              <a href="/theory-detail.html?id=${t.id}" class="btn btn-primary">Изучить тему</a>
+            </div>`
+          ).join('');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    loadTopics();
+  </script>
+</body>
+</html>
