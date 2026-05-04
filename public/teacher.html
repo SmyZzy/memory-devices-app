@@ -12,7 +12,7 @@
     <section class="page-header">
       <h1>Кабинет преподавателя</h1>
     </section>
-
+    
     <div class="dashboard-grid">
       <div class="card">
         <h3>Мои данные</h3>
@@ -26,7 +26,7 @@
         </div>
       </div>
     </div>
-
+    
     <div class="tabs">
       <button class="tab-btn active" onclick="showTab('stats')">Статистика</button>
       <button class="tab-btn" onclick="showTab('accounts')">Аккаунты</button>
@@ -34,7 +34,7 @@
       <button class="tab-btn" onclick="showTab('mini-tests')">Редактирование мини-тестов</button>
       <button class="tab-btn" onclick="showTab('tests')">Редактирование полных тестов</button>
     </div>
-
+    
     <div id="tab-stats" class="tab-content">
       <div class="card">
         <h3>Статистика тестирования студентов</h3>
@@ -55,7 +55,7 @@
         <div id="statsTable">Загрузка...</div>
       </div>
     </div>
-
+    
     <div id="tab-accounts" class="tab-content" style="display:none;">
       <div class="card">
         <h3>Генерация аккаунтов для студентов</h3>
@@ -72,40 +72,38 @@
         <div id="studentsList">Загрузка...</div>
       </div>
     </div>
-
+    
     <div id="tab-theory" class="tab-content" style="display:none;">
       <div class="card">
         <h3>Редактирование теории</h3>
         <div id="theoryEditList">Загрузка...</div>
       </div>
     </div>
-
+    
     <div id="tab-mini-tests" class="tab-content" style="display:none;">
       <div class="card">
         <h3>Редактирование мини-тестов</h3>
         <div id="miniTestEditList">Загрузка...</div>
         <hr>
         <h4>Добавить вопрос мини-теста</h4>
-        <div id="addMiniQuestionForm">
-          <select id="newMiniTopic" class="input-field" style="margin-bottom:0.5rem;">
-            <option value="">Выберите тему</option>
+        <select id="newMiniTopic" class="input-field" style="margin-bottom:0.5rem;">
+          <option value="">Выберите тему</option>
+        </select>
+        <input type="text" id="newMiniQ" placeholder="Вопрос" class="input-field">
+        <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newMiniA" placeholder="Вариант A" class="input-field opt-input"></div>
+        <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newMiniB" placeholder="Вариант B" class="input-field opt-input"></div>
+        <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newMiniC" placeholder="Вариант C" class="input-field opt-input"></div>
+        <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newMiniD" placeholder="Вариант D" class="input-field opt-input"></div>
+        <div class="opt-row">
+          <span class="opt-label ok-label">OK</span>
+          <select id="newMiniCorrect" class="input-field opt-input">
+            <option value="A">A правильный</option>
+            <option value="B">B правильный</option>
+            <option value="C">C правильный</option>
+            <option value="D">D правильный</option>
           </select>
-          <input type="text" id="newMiniQ" placeholder="Вопрос" class="input-field">
-          <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newMiniA" placeholder="Вариант A" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newMiniB" placeholder="Вариант B" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newMiniC" placeholder="Вариант C" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newMiniD" placeholder="Вариант D" class="input-field opt-input"></div>
-          <div class="opt-row">
-            <span class="opt-label ok-label">OK</span>
-            <select id="newMiniCorrect" class="input-field opt-input">
-              <option value="A">A правильный</option>
-              <option value="B">B правильный</option>
-              <option value="C">C правильный</option>
-              <option value="D">D правильный</option>
-            </select>
-          </div>
-          <button onclick="addMiniQuestion()" class="btn btn-sm btn-primary">Добавить</button>
         </div>
+        <button onclick="addMiniQuestion()" class="btn btn-sm btn-primary">Добавить</button>
       </div>
     </div>
     
@@ -115,51 +113,21 @@
         <div id="fullTestEditList">Загрузка...</div>
         <hr>
         <h4>Добавить вопрос</h4>
-        <div id="addQuestionForm">
-          <input type="text" id="newQ" placeholder="Вопрос" class="input-field">
-          <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newA" placeholder="Вариант A" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newB" placeholder="Вариант B" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newC" placeholder="Вариант C" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newD" placeholder="Вариант D" class="input-field opt-input"></div>
-          <div class="opt-row">
-            <span class="opt-label ok-label">OK</span>
-            <select id="newCorrect" class="input-field opt-input">
-              <option value="A">A правильный</option>
-              <option value="B">B правильный</option>
-              <option value="C">C правильный</option>
-              <option value="D">D правильный</option>
-            </select>
-          </div>
-          <button onclick="addQuestion()" class="btn btn-sm btn-primary">Добавить</button>
+        <input type="text" id="newQ" placeholder="Вопрос" class="input-field">
+        <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newA" placeholder="Вариант A" class="input-field opt-input"></div>
+        <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newB" placeholder="Вариант B" class="input-field opt-input"></div>
+        <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newC" placeholder="Вариант C" class="input-field opt-input"></div>
+        <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newD" placeholder="Вариант D" class="input-field opt-input"></div>
+        <div class="opt-row">
+          <span class="opt-label ok-label">OK</span>
+          <select id="newCorrect" class="input-field opt-input">
+            <option value="A">A правильный</option>
+            <option value="B">B правильный</option>
+            <option value="C">C правильный</option>
+            <option value="D">D правильный</option>
+          </select>
         </div>
-      </div>
-    </div>
-          <button onclick="addMiniQuestion()" class="btn btn-sm btn-primary">Добавить</button>
-        </div>
-      </div>
-      
-      <div class="card" style="margin-top:1rem;">
-        <h3>Редактирование вопросов полного теста</h3>
-        <div id="fullTestEditList">Загрузка...</div>
-        <hr>
-        <h4>Добавить вопрос</h4>
-        <div id="addQuestionForm">
-          <input type="text" id="newQ" placeholder="Вопрос" class="input-field">
-          <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newA" placeholder="Вариант A" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newB" placeholder="Вариант B" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newC" placeholder="Вариант C" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newD" placeholder="Вариант D" class="input-field opt-input"></div>
-          <div class="opt-row">
-            <span class="opt-label ok-label">OK</span>
-            <select id="newCorrect" class="input-field opt-input">
-              <option value="A">A правильный</option>
-              <option value="B">B правильный</option>
-              <option value="C">C правильный</option>
-              <option value="D">D правильный</option>
-            </select>
-          </div>
-          <button onclick="addQuestion()" class="btn btn-sm btn-primary">Добавить</button>
-        </div>
+        <button onclick="addQuestion()" class="btn btn-sm btn-primary">Добавить</button>
       </div>
     </div>
   </main>
@@ -188,7 +156,7 @@
         window.location.href = '/login.html';
       }
     }
-
+    
     async function loadGroups() {
       const res = await fetch('/api/teacher/groups');
       const data = await res.json();
@@ -196,14 +164,14 @@
       document.getElementById('filterGroup').innerHTML = '<option value="">Все группы</option>' + opts;
       document.getElementById('genGroup').innerHTML = '<option value="">Выберите группу</option>' + opts;
     }
-
+    
     async function loadStatistics() {
       const groupId = document.getElementById('filterGroup').value;
       const sortBy = document.getElementById('filterSort').value;
       const sortOrder = document.getElementById('filterOrder').value;
       let url = `/api/teacher/statistics?sort_by=${sortBy}&sort_order=${sortOrder}`;
       if (groupId) url += `&group_id=${groupId}`;
-
+      
       const res = await fetch(url);
       const data = await res.json();
       const container = document.getElementById('statsTable');
@@ -226,7 +194,7 @@
             </tr>`).join('')}</tbody>
         </table>`;
     }
-
+    
     async function loadStudents() {
       const res = await fetch('/api/teacher/students');
       const data = await res.json();
@@ -247,13 +215,13 @@
             </tr>`).join('')}</tbody>
         </table>`;
     }
-
+    
     async function generateAccounts() {
       const groupId = document.getElementById('genGroup').value;
       const count = document.getElementById('genCount').value;
       const prefix = document.getElementById('genPrefix').value;
       if (!groupId || !count) return alert('Заполните все поля');
-
+      
       const res = await fetch('/api/teacher/generate-accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -272,7 +240,7 @@
         loadStudents();
       }
     }
-
+    
     function copyAccounts() {
       const rows = document.querySelectorAll('#generatedAccounts table tbody tr');
       let text = '';
@@ -280,17 +248,17 @@
       navigator.clipboard.writeText(text);
       alert('Скопировано!');
     }
-
+    
     async function deleteStudent(id) {
       if (!confirm('Удалить студента?')) return;
       await fetch(`/api/teacher/account/${id}`, { method: 'DELETE' });
       loadStudents();
     }
-
+    
     function showEditProfile() {
       document.getElementById('editProfileForm').style.display = 'block';
     }
-
+    
     async function saveProfile() {
       await fetch('/api/teacher/profile', {
         method: 'PUT',
@@ -303,7 +271,7 @@
       });
       loadProfile();
     }
-
+    
     function showTab(name) {
       document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -313,7 +281,7 @@
       if (name === 'mini-tests') loadMiniTestEdit();
       if (name === 'tests') loadFullTestEdit();
     }
-
+    
     async function loadTheoryEdit() {
       const res = await fetch('/api/teacher/theory-topics');
       const data = await res.json();
@@ -323,12 +291,11 @@
           <h4>${t.title}</h4>
           <input type="text" value="${escapeHtml(t.title)}" id="tt_${t.id}_title" class="input-field">
           <textarea id="tt_${t.id}_content" rows="6" class="input-field">${escapeHtml(t.short_content || '')}</textarea>
-          <textarea id="tt_${t.id}_files" rows="3" class="input-field" placeholder="Файлы (каждый с новой строки или через запятую):
-${t.files ? t.files.join('\n') : ''}</textarea>
+          <textarea id="tt_${t.id}_files" rows="3" class="input-field" placeholder="Файлы (каждый с новой строки или через запятую):">${(t.files || []).join('\n')}</textarea>
           <button onclick="saveTheory(${t.id})" class="btn btn-sm btn-primary">Сохранить</button>
         </div>`).join('');
     }
-
+    
     async function saveTheory(id) {
       const filesRaw = document.getElementById(`tt_${id}_files`).value;
       const files = filesRaw ? filesRaw.split(/[\n,]/).map(f => f.trim()).filter(f => f) : [];
@@ -343,61 +310,13 @@ ${t.files ? t.files.join('\n') : ''}</textarea>
       });
       alert('Сохранено');
     }
-
-    async function loadFullTestEdit() {
-      const res = await fetch('/api/teacher/full-tests');
-      const data = await res.json();
-      const container = document.getElementById('fullTestEditList');
-      container.innerHTML = data.questions.map(q => `
-        <div class="edit-block">
-          <p><strong>Q${q.id}:</strong> ${escapeHtml(q.question.substring(0, 80))}...</p>
-          <input type="text" value="${escapeHtml(q.question)}" id="ft_${q.id}_q" class="input-field" placeholder="Вопрос">
-          <div class="opt-row"><span class="opt-label">A</span><input type="text" value="${escapeHtml(q.option_a)}" id="ft_${q.id}_a" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">B</span><input type="text" value="${escapeHtml(q.option_b)}" id="ft_${q.id}_b" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">C</span><input type="text" value="${escapeHtml(q.option_c)}" id="ft_${q.id}_c" class="input-field opt-input"></div>
-          <div class="opt-row"><span class="opt-label">D</span><input type="text" value="${escapeHtml(q.option_d)}" id="ft_${q.id}_d" class="input-field opt-input"></div>
-          <div class="opt-row">
-            <span class="opt-label ok-label">OK</span>
-            <select id="ft_${q.id}_cor" class="input-field opt-input">
-              <option value="A" ${q.correct_answer==='A'?'selected':''}>A правильный</option>
-              <option value="B" ${q.correct_answer==='B'?'selected':''}>B правильный</option>
-              <option value="C" ${q.correct_answer==='C'?'selected':''}>C правильный</option>
-              <option value="D" ${q.correct_answer==='D'?'selected':''}>D правильный</option>
-            </select>
-          </div>
-          <button onclick="saveQuestion(${q.id})" class="btn btn-sm btn-primary">Сохранить</button>
-          <button onclick="deleteQuestion(${q.id})" class="btn btn-sm btn-danger">Удалить</button>
-        </div>`).join('');
-    }
-
-    async function saveQuestion(id) {
-      await fetch(`/api/teacher/full-tests/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: document.getElementById(`ft_${id}_q`).value,
-          option_a: document.getElementById(`ft_${id}_a`).value,
-          option_b: document.getElementById(`ft_${id}_b`).value,
-          option_c: document.getElementById(`ft_${id}_c`).value,
-          option_d: document.getElementById(`ft_${id}_d`).value,
-          correct_answer: document.getElementById(`ft_${id}_cor`).value
-        })
-      });
-      alert('Сохранено');
-    }
-
-    async function deleteQuestion(id) {
-      if (!confirm('Удалить вопрос?')) return;
-      await fetch(`/api/teacher/full-tests/${id}`, { method: 'DELETE' });
-      loadFullTestEdit();
-    }
-
+    
     async function loadMiniTestEdit() {
       const res = await fetch('/api/teacher/theory-topics');
       const data = await res.json();
       const topics = data.topics;
       
-      const res2 = await fetch('/api/teacher/full-tests');
+      const res2 = await fetch('/api/teacher/mini-tests');
       const data2 = await res2.json();
       
       const container = document.getElementById('miniTestEditList');
@@ -434,27 +353,10 @@ ${t.files ? t.files.join('\n') : ''}</textarea>
           </div>`;
       }).join('');
       
-      document.getElementById('addMiniQuestionForm').innerHTML = `
-        <h4>Добавить вопрос мини-теста</h4>
-        <select id="newMiniTopic" class="input-field">
-          <option value="">Выберите тему</option>
-          ${topics.map(t => `<option value="${t.id}">${escapeHtml(t.title)}</option>`).join('')}
-        </select>
-        <input type="text" id="newMiniQ" placeholder="Вопрос" class="input-field">
-        <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newMiniA" placeholder="Вариант A" class="input-field opt-input"></div>
-        <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newMiniB" placeholder="Вариант B" class="input-field opt-input"></div>
-        <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newMiniC" placeholder="Вариант C" class="input-field opt-input"></div>
-        <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newMiniD" placeholder="Вариант D" class="input-field opt-input"></div>
-        <div class="opt-row">
-          <span class="opt-label ok-label">OK</span>
-          <select id="newMiniCorrect" class="input-field opt-input">
-            <option value="A">A правильный</option>
-            <option value="B">B правильный</option>
-            <option value="C">C правильный</option>
-            <option value="D">D правильный</option>
-          </select>
-        </div>
-        <button onclick="addMiniQuestion()" class="btn btn-sm btn-primary">Добавить</button>
+      // Add question form
+      document.getElementById('newMiniTopic').innerHTML = `
+        <option value="">Выберите тему</option>
+        ${topics.map(t => `<option value="${t.id}">${escapeHtml(t.title)}</option>`).join('')}
       `;
     }
 
@@ -523,13 +425,65 @@ ${t.files ? t.files.join('\n') : ''}</textarea>
       document.getElementById('newD').value = '';
       loadFullTestEdit();
     }
-
+    
+    async function loadFullTestEdit() {
+      const res = await fetch('/api/teacher/full-tests');
+      const data = await res.json();
+      const container = document.getElementById('fullTestEditList');
+      if (!data.questions || data.questions.length === 0) {
+        container.innerHTML = '<p>Нет вопросов полного теста</p>';
+        return;
+      }
+      container.innerHTML = data.questions.map(q => `
+        <div class="edit-block">
+          <p><strong>Q${q.id}:</strong> ${escapeHtml(q.question.substring(0, 80))}...</p>
+          <input type="text" value="${escapeHtml(q.question)}" id="ft_${q.id}_q" class="input-field" placeholder="Вопрос">
+          <div class="opt-row"><span class="opt-label">A</span><input type="text" value="${escapeHtml(q.option_a)}" id="ft_${q.id}_a" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">B</span><input type="text" value="${escapeHtml(q.option_b)}" id="ft_${q.id}_b" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">C</span><input type="text" value="${escapeHtml(q.option_c)}" id="ft_${q.id}_c" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">D</span><input type="text" value="${escapeHtml(q.option_d)}" id="ft_${q.id}_d" class="input-field opt-input"></div>
+          <div class="opt-row">
+            <span class="opt-label ok-label">OK</span>
+            <select id="ft_${q.id}_cor" class="input-field opt-input">
+              <option value="A" ${q.correct_answer=='A'?'selected':''}>A правильный</option>
+              <option value="B" ${q.correct_answer=='B'?'selected':''}>B правильный</option>
+              <option value="C" ${q.correct_answer=='C'?'selected':''}>C правильный</option>
+              <option value="D" ${q.correct_answer=='D'?'selected':''}>D правильный</option>
+            </select>
+          </div>
+          <button onclick="saveQuestion(${q.id})" class="btn btn-sm btn-primary">Сохранить</button>
+          <button onclick="deleteQuestion(${q.id})" class="btn btn-sm btn-danger">Удалить</button>
+        </div>`).join('');
+    }
+    
+    async function saveQuestion(id) {
+      await fetch(`/api/teacher/full-tests/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: document.getElementById(`ft_${id}_q`).value,
+          option_a: document.getElementById(`ft_${id}_a`).value,
+          option_b: document.getElementById(`ft_${id}_b`).value,
+          option_c: document.getElementById(`ft_${id}_c`).value,
+          option_d: document.getElementById(`ft_${id}_d`).value,
+          correct_answer: document.getElementById(`ft_${id}_cor`).value
+        })
+      });
+      alert('Сохранено');
+    }
+    
+    async function deleteQuestion(id) {
+      if (!confirm('Удалить вопрос?')) return;
+      await fetch(`/api/teacher/full-tests/${id}`, { method: 'DELETE' });
+      loadFullTestEdit();
+    }
+    
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
-
+    
     loadProfile();
     loadGroups();
     loadStatistics();
