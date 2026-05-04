@@ -31,7 +31,8 @@
       <button class="tab-btn active" onclick="showTab('stats')">Статистика</button>
       <button class="tab-btn" onclick="showTab('accounts')">Аккаунты</button>
       <button class="tab-btn" onclick="showTab('theory')">Редактирование теории</button>
-      <button class="tab-btn" onclick="showTab('tests')">Редактирование тестов</button>
+      <button class="tab-btn" onclick="showTab('mini-tests')">Редактирование мини-тестов</button>
+      <button class="tab-btn" onclick="showTab('tests')">Редактирование полных тестов</button>
     </div>
 
     <div id="tab-stats" class="tab-content">
@@ -79,7 +80,7 @@
       </div>
     </div>
 
-    <div id="tab-tests" class="tab-content" style="display:none;">
+    <div id="tab-mini-tests" class="tab-content" style="display:none;">
       <div class="card">
         <h3>Редактирование мини-тестов</h3>
         <div id="miniTestEditList">Загрузка...</div>
@@ -103,6 +104,36 @@
               <option value="D">D правильный</option>
             </select>
           </div>
+          <button onclick="addMiniQuestion()" class="btn btn-sm btn-primary">Добавить</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="tab-tests" class="tab-content" style="display:none;">
+      <div class="card">
+        <h3>Редактирование вопросов полного теста</h3>
+        <div id="fullTestEditList">Загрузка...</div>
+        <hr>
+        <h4>Добавить вопрос</h4>
+        <div id="addQuestionForm">
+          <input type="text" id="newQ" placeholder="Вопрос" class="input-field">
+          <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newA" placeholder="Вариант A" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newB" placeholder="Вариант B" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newC" placeholder="Вариант C" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newD" placeholder="Вариант D" class="input-field opt-input"></div>
+          <div class="opt-row">
+            <span class="opt-label ok-label">OK</span>
+            <select id="newCorrect" class="input-field opt-input">
+              <option value="A">A правильный</option>
+              <option value="B">B правильный</option>
+              <option value="C">C правильный</option>
+              <option value="D">D правильный</option>
+            </select>
+          </div>
+          <button onclick="addQuestion()" class="btn btn-sm btn-primary">Добавить</button>
+        </div>
+      </div>
+    </div>
           <button onclick="addMiniQuestion()" class="btn btn-sm btn-primary">Добавить</button>
         </div>
       </div>
@@ -279,7 +310,8 @@
       document.getElementById('tab-' + name).style.display = 'block';
       event.target.classList.add('active');
       if (name === 'theory') loadTheoryEdit();
-      if (name === 'tests') { loadFullTestEdit(); loadMiniTestEdit(); }
+      if (name === 'mini-tests') loadMiniTestEdit();
+      if (name === 'tests') loadFullTestEdit();
     }
 
     async function loadTheoryEdit() {
