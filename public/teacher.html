@@ -81,6 +81,33 @@
 
     <div id="tab-tests" class="tab-content" style="display:none;">
       <div class="card">
+        <h3>Редактирование мини-тестов</h3>
+        <div id="miniTestEditList">Загрузка...</div>
+        <hr>
+        <h4>Добавить вопрос мини-теста</h4>
+        <div id="addMiniQuestionForm">
+          <select id="newMiniTopic" class="input-field" style="margin-bottom:0.5rem;">
+            <option value="">Выберите тему</option>
+          </select>
+          <input type="text" id="newMiniQ" placeholder="Вопрос" class="input-field">
+          <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newMiniA" placeholder="Вариант A" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newMiniB" placeholder="Вариант B" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newMiniC" placeholder="Вариант C" class="input-field opt-input"></div>
+          <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newMiniD" placeholder="Вариант D" class="input-field opt-input"></div>
+          <div class="opt-row">
+            <span class="opt-label ok-label">OK</span>
+            <select id="newMiniCorrect" class="input-field opt-input">
+              <option value="A">A правильный</option>
+              <option value="B">B правильный</option>
+              <option value="C">C правильный</option>
+              <option value="D">D правильный</option>
+            </select>
+          </div>
+          <button onclick="addMiniQuestion()" class="btn btn-sm btn-primary">Добавить</button>
+        </div>
+      </div>
+      
+      <div class="card" style="margin-top:1rem;">
         <h3>Редактирование вопросов полного теста</h3>
         <div id="fullTestEditList">Загрузка...</div>
         <hr>
@@ -252,7 +279,7 @@
       document.getElementById('tab-' + name).style.display = 'block';
       event.target.classList.add('active');
       if (name === 'theory') loadTheoryEdit();
-      if (name === 'tests') loadFullTestEdit();
+      if (name === 'tests') { loadFullTestEdit(); loadMiniTestEdit(); }
     }
 
     async function loadTheoryEdit() {
@@ -328,6 +355,117 @@
       if (!confirm('Удалить вопрос?')) return;
       await fetch(`/api/teacher/full-tests/${id}`, { method: 'DELETE' });
       loadFullTestEdit();
+    }
+
+    async function loadMiniTestEdit() {
+      const res = await fetch('/api/teacher/theory-topics');
+      const data = await res.json();
+      const topics = data.topics;
+      
+      const res2 = await fetch('/api/teacher/full-tests');
+      const data2 = await res2.json();
+      
+      const container = document.getElementById('miniTestEditList');
+      if (!data2.questions || data2.questions.length === 0) {
+        container.innerHTML = '<p>Нет вопросов мини-тестов</p>';
+        return;
+      }
+      
+      container.innerHTML = data2.questions.map(q => {
+        const topic = topics.find(t => t.id === q.topic_id);
+        return `
+          <div class="edit-block">
+            <p><strong>Тема:</strong> ${topic ? topic.title : '—'}</p>
+            <p><strong>Q${q.id}:</strong> ${escapeHtml(q.question.substring(0, 80))}...</p>
+            <select id="mini_topic_${q.id}" class="input-field">
+              ${topics.map(t => `<option value="${t.id}" ${q.topic_id === t.id ? 'selected' : ''}>${escapeHtml(t.title)}</option>`).join('')}
+            </select>
+            <input type="text" value="${escapeHtml(q.question)}" id="mini_q_${q.id}" class="input-field" placeholder="Вопрос">
+            <div class="opt-row"><span class="opt-label">A</span><input type="text" value="${escapeHtml(q.option_a)}" id="mini_a_${q.id}" class="input-field opt-input"></div>
+            <div class="opt-row"><span class="opt-label">B</span><input type="text" value="${escapeHtml(q.option_b)}" id="mini_b_${q.id}" class="input-field opt-input"></div>
+            <div class="opt-row"><span class="opt-label">C</span><input type="text" value="${escapeHtml(q.option_c)}" id="mini_c_${q.id}" class="input-field opt-input"></div>
+            <div class="opt-row"><span class="opt-label">D</span><input type="text" value="${escapeHtml(q.option_d)}" id="mini_d_${q.id}" class="input-field opt-input"></div>
+            <div class="opt-row">
+              <span class="opt-label ok-label">OK</span>
+              <select id="mini_cor_${q.id}" class="input-field opt-input">
+                <option value="A" ${q.correct_answer=='A'?'selected':''}>A правильный</option>
+                <option value="B" ${q.correct_answer=='B'?'selected':''}>B правильный</option>
+                <option value="C" ${q.correct_answer=='C'?'selected':''}>C правильный</option>
+                <option value="D" ${q.correct_answer=='D'?'selected':''}>D правильный</option>
+              </select>
+            </div>
+            <button onclick="saveMiniQuestion(${q.id})" class="btn btn-sm btn-primary">Сохранить</button>
+            <button onclick="deleteMiniQuestion(${q.id})" class="btn btn-sm btn-danger">Удалить</button>
+          </div>`;
+      }).join('');
+      
+      document.getElementById('addMiniQuestionForm').innerHTML = `
+        <h4>Добавить вопрос мини-теста</h4>
+        <select id="newMiniTopic" class="input-field">
+          <option value="">Выберите тему</option>
+          ${topics.map(t => `<option value="${t.id}">${escapeHtml(t.title)}</option>`).join('')}
+        </select>
+        <input type="text" id="newMiniQ" placeholder="Вопрос" class="input-field">
+        <div class="opt-row"><span class="opt-label">A</span><input type="text" id="newMiniA" placeholder="Вариант A" class="input-field opt-input"></div>
+        <div class="opt-row"><span class="opt-label">B</span><input type="text" id="newMiniB" placeholder="Вариант B" class="input-field opt-input"></div>
+        <div class="opt-row"><span class="opt-label">C</span><input type="text" id="newMiniC" placeholder="Вариант C" class="input-field opt-input"></div>
+        <div class="opt-row"><span class="opt-label">D</span><input type="text" id="newMiniD" placeholder="Вариант D" class="input-field opt-input"></div>
+        <div class="opt-row">
+          <span class="opt-label ok-label">OK</span>
+          <select id="newMiniCorrect" class="input-field opt-input">
+            <option value="A">A правильный</option>
+            <option value="B">B правильный</option>
+            <option value="C">C правильный</option>
+            <option value="D">D правильный</option>
+          </select>
+        </div>
+        <button onclick="addMiniQuestion()" class="btn btn-sm btn-primary">Добавить</button>
+      `;
+    }
+
+    async function saveMiniQuestion(id) {
+      await fetch(`/api/teacher/mini-tests/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic_id: document.getElementById(`mini_topic_${id}`).value,
+          question: document.getElementById(`mini_q_${id}`).value,
+          option_a: document.getElementById(`mini_a_${id}`).value,
+          option_b: document.getElementById(`mini_b_${id}`).value,
+          option_c: document.getElementById(`mini_c_${id}`).value,
+          option_d: document.getElementById(`mini_d_${id}`).value,
+          correct_answer: document.getElementById(`mini_cor_${id}`).value
+        })
+      });
+      alert('Сохранено');
+    }
+
+    async function deleteMiniQuestion(id) {
+      if (!confirm('Удалить вопрос?')) return;
+      await fetch(`/api/teacher/mini-tests/${id}`, { method: 'DELETE' });
+      loadMiniTestEdit();
+    }
+
+    async function addMiniQuestion() {
+      const topic_id = document.getElementById('newMiniTopic').value;
+      const question = document.getElementById('newMiniQ').value;
+      const option_a = document.getElementById('newMiniA').value;
+      const option_b = document.getElementById('newMiniB').value;
+      const option_c = document.getElementById('newMiniC').value;
+      const option_d = document.getElementById('newMiniD').value;
+      const correct_answer = document.getElementById('newMiniCorrect').value;
+      if (!topic_id || !question || !option_a || !option_b || !option_c || !option_d) return alert('Заполните все поля');
+      await fetch('/api/teacher/mini-tests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic_id, question, option_a, option_b, option_c, option_d, correct_answer })
+      });
+      document.getElementById('newMiniQ').value = '';
+      document.getElementById('newMiniA').value = '';
+      document.getElementById('newMiniB').value = '';
+      document.getElementById('newMiniC').value = '';
+      document.getElementById('newMiniD').value = '';
+      loadMiniTestEdit();
     }
 
     async function addQuestion() {
