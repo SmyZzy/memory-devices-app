@@ -156,7 +156,7 @@
         window.location.href = '/login.html';
       }
     }
-    
+
     async function loadGroups() {
       const res = await fetch('/api/teacher/groups');
       const data = await res.json();
@@ -164,7 +164,7 @@
       document.getElementById('filterGroup').innerHTML = '<option value="">Все группы</option>' + opts;
       document.getElementById('genGroup').innerHTML = '<option value="">Выберите группу</option>' + opts;
     }
-    
+
     async function loadStatistics() {
       const groupId = document.getElementById('filterGroup').value;
       const sortBy = document.getElementById('filterSort').value;
@@ -194,7 +194,7 @@
             </tr>`).join('')}</tbody>
         </table>`;
     }
-    
+
     async function loadStudents() {
       const res = await fetch('/api/teacher/students');
       const data = await res.json();
@@ -215,7 +215,7 @@
             </tr>`).join('')}</tbody>
         </table>`;
     }
-    
+
     async function generateAccounts() {
       const groupId = document.getElementById('genGroup').value;
       const count = document.getElementById('genCount').value;
@@ -234,13 +234,13 @@
           <h4>Сгенерированные аккаунты (${data.generated.length}):</h4>
           <table>
             <thead><tr><th>Логин</th><th>Пароль</th></tr></thead>
-            <tbody>${data.generated.map(a => `<tr><td>${a.username}</td><td><code>${a.password}</code></td></tr>`).join('')}</tbody>
+              <tbody>${data.generated.map(a => `<tr><td>${a.username}</td><td><code>${a.password}</code></td></tr>`).join('')}</tbody>
           </table>
           <button onclick="copyAccounts()" class="btn btn-sm btn-secondary">Копировать все</button>`;
         loadStudents();
       }
     }
-    
+
     function copyAccounts() {
       const rows = document.querySelectorAll('#generatedAccounts table tbody tr');
       let text = '';
@@ -248,17 +248,17 @@
       navigator.clipboard.writeText(text);
       alert('Скопировано!');
     }
-    
+
     async function deleteStudent(id) {
       if (!confirm('Удалить студента?')) return;
       await fetch(`/api/teacher/account/${id}`, { method: 'DELETE' });
       loadStudents();
     }
-    
+
     function showEditProfile() {
       document.getElementById('editProfileForm').style.display = 'block';
     }
-    
+
     async function saveProfile() {
       await fetch('/api/teacher/profile', {
         method: 'PUT',
@@ -271,7 +271,7 @@
       });
       loadProfile();
     }
-    
+
     function showTab(name) {
       document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -281,7 +281,7 @@
       if (name === 'mini-tests') loadMiniTestEdit();
       if (name === 'tests') loadFullTestEdit();
     }
-    
+
     async function loadTheoryEdit() {
       const res = await fetch('/api/teacher/theory-topics');
       const data = await res.json();
@@ -291,26 +291,24 @@
           <h4>${t.title}</h4>
           <input type="text" value="${escapeHtml(t.title)}" id="tt_${t.id}_title" class="input-field">
           <textarea id="tt_${t.id}_content" rows="6" class="input-field">${escapeHtml(t.short_content || '')}</textarea>
-          <textarea id="tt_${t.id}_files" rows="3" class="input-field" placeholder="Файлы (каждый с новой строки или через запятую):">${(t.files || []).join('\n')}</textarea>
+          <input type="text" value="${escapeHtml(t.file_path || '')}" id="tt_${t.id}_file" placeholder="Путь к файлу (/files/имя.pdf)" class="input-field">
           <button onclick="saveTheory(${t.id})" class="btn btn-sm btn-primary">Сохранить</button>
         </div>`).join('');
     }
-    
+
     async function saveTheory(id) {
-      const filesRaw = document.getElementById(`tt_${id}_files`).value;
-      const files = filesRaw ? filesRaw.split(/[\n,]/).map(f => f.trim()).filter(f => f) : [];
       await fetch(`/api/teacher/theory-topics/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: document.getElementById(`tt_${id}_title`).value,
           short_content: document.getElementById(`tt_${id}_content`).value,
-          file_path: files.join('\n')
+          file_path: document.getElementById(`tt_${id}_file`).value
         })
       });
       alert('Сохранено');
     }
-    
+
     async function loadMiniTestEdit() {
       const res = await fetch('/api/teacher/theory-topics');
       const data = await res.json();
@@ -352,12 +350,6 @@
             <button onclick="deleteMiniQuestion(${q.id})" class="btn btn-sm btn-danger">Удалить</button>
           </div>`;
       }).join('');
-      
-      // Add question form
-      document.getElementById('newMiniTopic').innerHTML = `
-        <option value="">Выберите тему</option>
-        ${topics.map(t => `<option value="${t.id}">${escapeHtml(t.title)}</option>`).join('')}
-      `;
     }
 
     async function saveMiniQuestion(id) {
@@ -425,7 +417,7 @@
       document.getElementById('newD').value = '';
       loadFullTestEdit();
     }
-    
+
     async function loadFullTestEdit() {
       const res = await fetch('/api/teacher/full-tests');
       const data = await res.json();
@@ -455,7 +447,7 @@
           <button onclick="deleteQuestion(${q.id})" class="btn btn-sm btn-danger">Удалить</button>
         </div>`).join('');
     }
-    
+
     async function saveQuestion(id) {
       await fetch(`/api/teacher/full-tests/${id}`, {
         method: 'PUT',
@@ -471,19 +463,19 @@
       });
       alert('Сохранено');
     }
-    
+
     async function deleteQuestion(id) {
       if (!confirm('Удалить вопрос?')) return;
       await fetch(`/api/teacher/full-tests/${id}`, { method: 'DELETE' });
       loadFullTestEdit();
     }
-    
+
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
-    
+
     loadProfile();
     loadGroups();
     loadStatistics();

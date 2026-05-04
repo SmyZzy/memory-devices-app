@@ -156,11 +156,18 @@ router.get('/theory-topics', async (req, res) => {
 router.put('/theory-topics/:id', async (req, res) => {
   try {
     const { title, short_content, file_path } = req.body;
-    // file_path может быть массивом или строкой
-    const filesStr = Array.isArray(file_path) ? file_path.join('\n') : (file_path || null);
     await pool.query('UPDATE theory_topics SET title = ?, short_content = ?, file_path = ? WHERE id = ?',
-      [title, short_content, filesStr, req.params.id]);
+      [title, short_content, file_path || null, req.params.id]);
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+router.get('/mini-tests', async (req, res) => {
+  try {
+    const [questions] = await pool.query('SELECT * FROM mini_tests ORDER BY topic_id, id');
+    res.json({ questions });
   } catch (err) {
     res.status(500).json({ error: 'Ошибка сервера' });
   }
