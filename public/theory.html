@@ -32,8 +32,8 @@
           container.innerHTML = data.topics.map(t =>
             `<div class="topic-card">
               <h3>${t.title}</h3>
-              ${t.file_path ? `<a href="/${t.file_path}" target="_blank" class="file-link">📄 Скачать материалы</a>` : ''}
-              <a href="/theory-detail.html?id=${t.id}" class="btn btn-primary">Изучить тему</a>
+              ${t.file_path ? `<a href="/${t.file_path}" class="btn btn-secondary" style="margin-top:0.5rem;">📄 Скачать лекцию</a>` : ''}
+              <a href="/theory-detail.html?id=${t.id}" class="btn btn-primary" style="margin-top:0.5rem;">Изучить тему</a>
             </div>`
           ).join('');
         }

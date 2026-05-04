@@ -47,8 +47,7 @@
           document.getElementById('topicContent').innerHTML = data.topic.short_content;
           if (data.topic.file_path) {
             document.getElementById('fileDownload').innerHTML = `
-              <h3>📄 Материалы для скачивания:</h3>
-              <a href="/${data.topic.file_path}" target="_blank" class="file-link">📄 Скачать файл</a>
+              <a href="/${data.topic.file_path}" class="btn btn-secondary" style="margin-top:1rem;">📄 Скачать лекцию</a>
             `;
           }
         }
