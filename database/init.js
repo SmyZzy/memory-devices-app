@@ -110,11 +110,11 @@ async function initDatabase() {
     }
 
     const [topicsCount] = await conn.query('SELECT COUNT(*) as count FROM theory_topics');
-    if (topicsCount[0].count === 0) {
-      const topics = [
-        [
-          'Тема 1. Оперативная память',
-          `<h3>Оперативная память</h3>
+    
+    const topics = [
+      [
+        'Тема 1. Оперативная память',
+        `<h3>Оперативная память</h3>
 <p>Оперативная память (RAM — Random Access Memory) — энергозависимая память, используемая для временного хранения данных и программ, с которыми процессор работает в текущий момент.</p>
 <h4>Типы RAM:</h4>
 <ul>
@@ -136,11 +136,11 @@ async function initDatabase() {
 <li>Тайминги (задержки, например CL16)</li>
 <li>Пропускная способность (ГБ/с)</li>
 </ul>`,
-          'files/theme1_memory.docx', 1
-        ],
-        [
-          'Тема 2. Кеш-память',
-          `<h3>Кеш-память</h3>
+        'files/theme1_memory.docx', 1
+      ],
+      [
+        'Тема 2. Кеш-память',
+        `<h3>Кеш-память</h3>
 <p>Кеш-память — это высокоскоростная память, используемая процессором для временного хранения часто используемых данных и команд.</p>
 <h4>Уровни кеш-памяти:</h4>
 <ul>
@@ -154,11 +154,11 @@ async function initDatabase() {
 <li>При попадании (cache hit) данные считываются быстро</li>
 <li>При промахе (cache miss) данные загружаются из RAM</li>
 </ul>`,
-          'files/theme2_cache.ppt', 2
-        ],
-        [
-          'Тема 3. Накопители',
-          `<h3>Накопители</h3>
+        'files/theme2_cache.ppt', 2
+      ],
+      [
+        'Тема 3. Накопители',
+        `<h3>Накопители</h3>
 <p>Накопители (HDD, SSD) — устройства для долговременного хранения данных.</p>
 <h4>Жёсткие диски (HDD):</h4>
 <ul>
@@ -175,31 +175,45 @@ async function initDatabase() {
 <li>Преимущества: высокая скорость, бесшумность, ударопрочность</li>
 <li>Недостатки: ограниченное число циклов записи</li>
 </ul>`,
-          'files/theme3_hdd.ppt', 3
-        ],
-        [
-          'Тема 4. Системы RAID',
-          `<h3>Системы RAID</h3>
+        'files/theme3_hdd.ppt', 3
+      ],
+      [
+        'Тема 4. Системы RAID',
+        `<h3>Системы RAID</h3>
 <p>RAID (Redundant Array of Independent Disks) — технология объединения нескольких дисков для повышения надежности или производительности.</p>
 <h4>Основные уровни RAID:</h4>
 <ul>
 <li><strong>RAID 0</strong> — чередование (striping), высокая скорость, нет отказоустойчивости</li>
-<li><strong>RAID 1</strong> — зеркалирование (mirroring), полная копия данных, высокая надежность</li>
+<li><strong>RAID 1</strong> — зеркалирование (miroring), полная копия данных, высокая надежность</li>
 <li><strong>RAID 5</strong> — чередование с чётностью, нужно минимум 3 диска</li>
 <li><strong>RAID 10</strong> — комбинация RAID 1+0, быстро и надёжно</li>
 </ul>
 <h4>Программный vs аппаратный RAID:</h4>
 <ul>
 <li><strong>Программный</strong> — реализован средствами ОС, дешевле</li>
-<li><strong>Аппаратный</strong> — отдельный RAID-контроллер, производительнее</li>
+<li><strong>Аппаратный</strong> — отдельный RAID-контролер, производительнее</li>
 </ul>`,
-          'files/theme4_raid.doc', 4
-        ]
-      ];
+        'files/theme4_raid.doc', 4
+      ]
+    ];
 
+    if (topicsCount[0].count === 0) {
+      // Вставляем новые темы
       for (const t of topics) {
         await conn.query('INSERT INTO theory_topics (title, short_content, file_path, order_num) VALUES (?, ?, ?, ?)', t);
       }
+      console.log('Theory topics created');
+    } else {
+      // ОБНОВЛЯЕМ существующие темы (по ID от 1 до 4)
+      for (let i = 0; i < topics.length; i++) {
+        const t = topics[i];
+        await conn.query(
+          'UPDATE theory_topics SET title = ?, short_content = ?, file_path = ? WHERE id = ?',
+          [t[0], t[1], t[2], (i + 1)]
+        );
+      }
+      console.log('Theory topics updated');
+    }
       console.log('Theory topics created');
     }
 
