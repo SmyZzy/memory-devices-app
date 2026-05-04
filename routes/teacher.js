@@ -43,7 +43,7 @@ router.put('/profile', async (req, res) => {
 router.get('/statistics', async (req, res) => {
   try {
     const { group_id, sort_by = 'completed_at', sort_order = 'DESC' } = req.query;
-
+ 
     let sql = `
       SELECT tr.id, u.first_name, u.last_name, u.middle_name, u.username, g.name as group_name,
              tr.score, tr.total_questions, tr.percentage, tr.test_type, tt.title as topic_title,
@@ -53,22 +53,23 @@ router.get('/statistics', async (req, res) => {
       LEFT JOIN \`groups\` g ON u.group_id = g.id
       LEFT JOIN theory_topics tt ON tr.topic_id = tt.id
     `;
-
+ 
     const params = [];
     if (group_id) {
       sql += ' WHERE u.group_id = ?';
       params.push(group_id);
     }
-
+ 
     const allowedSort = ['completed_at', 'percentage', 'score', 'group_name'];
     const orderBy = allowedSort.includes(sort_by) ? sort_by : 'completed_at';
     const orderDir = sort_order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
     sql += ` ORDER BY ${orderBy} ${orderDir}`;
-
+ 
     const [results] = await pool.query(sql, params);
-    res.json({ results });
+    res.json({ results: results || [] });
   } catch (err) {
-    res.status(500).json({ error: 'Ошибка сервера' });
+    console.error('Statistics error:', err);
+    res.status(500).json({ error: 'Ошибка сервера', results: [] });
   }
 });
 
@@ -211,9 +212,10 @@ router.delete('/mini-tests/:id', async (req, res) => {
 router.get('/full-tests', async (req, res) => {
   try {
     const [questions] = await pool.query('SELECT * FROM full_tests ORDER BY id');
-    res.json({ questions });
+    res.json({ questions: questions || [] });
   } catch (err) {
-    res.status(500).json({ error: 'Ошибка сервера' });
+    console.error('Full tests error:', err);
+    res.status(500).json({ error: 'Ошибка сервера', questions: [] });
   }
 });
 

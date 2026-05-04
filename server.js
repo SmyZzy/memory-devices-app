@@ -1,7 +1,10 @@
+/**
+ * Точка входа приложения: запуск сервера, подключение middleware, маршрутов и статики
+ */
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config(); // Загрузка переменных окружения из .env
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,11 +14,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/files', express.static(path.join(__dirname, 'public', 'files')));
 
+// Настройка сессий (через express-session): хранение состояния входа пользователя
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'default_secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000 }
+  secret: process.env.SESSION_SECRET || 'default_secret', // Секрет для подписи cookie (из .env)
+  resave: false,       // Не сохранять сессию, если не было изменений
+  saveUninitialized: false, // Не сохранять пустые сессии
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // Срок жизни cookie: 24 часа
 }));
 
 const authRoutes = require('./routes/auth');
@@ -46,6 +50,12 @@ app.get('/student', (req, res) => res.sendFile(path.join(__dirname, 'public', 's
 app.get('/student.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'student.html')));
 app.get('/teacher', (req, res) => res.sendFile(path.join(__dirname, 'public', 'teacher.html')));
 app.get('/teacher.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'teacher.html')));
+
+// Глобальный обработчик ошибок (чтобы вместо HTML возвращать JSON)
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
