@@ -323,19 +323,22 @@
           <h4>${t.title}</h4>
           <input type="text" value="${escapeHtml(t.title)}" id="tt_${t.id}_title" class="input-field">
           <textarea id="tt_${t.id}_content" rows="6" class="input-field">${escapeHtml(t.short_content || '')}</textarea>
-          <input type="text" value="${escapeHtml(t.file_path || '')}" id="tt_${t.id}_file" placeholder="Путь к файлу (/files/имя.pdf)" class="input-field">
+          <textarea id="tt_${t.id}_files" rows="3" class="input-field" placeholder="Файлы (каждый с новой строки или через запятую):
+${t.files ? t.files.join('\n') : ''}</textarea>
           <button onclick="saveTheory(${t.id})" class="btn btn-sm btn-primary">Сохранить</button>
         </div>`).join('');
     }
 
     async function saveTheory(id) {
+      const filesRaw = document.getElementById(`tt_${id}_files`).value;
+      const files = filesRaw ? filesRaw.split(/[\n,]/).map(f => f.trim()).filter(f => f) : [];
       await fetch(`/api/teacher/theory-topics/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: document.getElementById(`tt_${id}_title`).value,
           short_content: document.getElementById(`tt_${id}_content`).value,
-          file_path: document.getElementById(`tt_${id}_file`).value
+          file_path: files.join('\n')
         })
       });
       alert('Сохранено');

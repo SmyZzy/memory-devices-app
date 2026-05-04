@@ -45,9 +45,15 @@
         if (data.topic) {
           document.getElementById('topicTitle').textContent = data.topic.title;
           document.getElementById('topicContent').innerHTML = data.topic.short_content;
-          if (data.topic.file_path) {
-            document.getElementById('fileDownload').innerHTML =
-              `<a href="${data.topic.file_path}" target="_blank" class="btn btn-primary">📄 Скачать полный текст темы</a>`;
+          if (data.topic.files && data.topic.files.length > 0) {
+            document.getElementById('fileDownload').innerHTML = `
+              <h3>📄 Материалы для скачивания:</h3>
+              <div class="file-list">
+                ${data.topic.files.map(f => `
+                  <a href="/${f}" target="_blank" class="file-link">📄 ${f.split('/').pop()}</a>
+                `).join('')}
+              </div>
+            `;
           }
         }
       } catch (err) {

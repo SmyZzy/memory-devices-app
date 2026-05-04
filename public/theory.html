@@ -25,17 +25,26 @@
   <script>
     async function loadTopics() {
       try {
-        const res = await fetch('/api/theory/topics');
+        const res = await fetch('/api/theory-topics');
         const data = await res.json();
         const container = document.getElementById('topicsList');
         if (data.topics) {
           container.innerHTML = data.topics.map(t =>
             `<div class="topic-card">
               <h3>${t.title}</h3>
+              ${t.files && t.files.length > 0 ? `
+                <div class="file-list">
+                  ${t.files.map(f => `<a href="/${f}" target="_blank" class="file-link">📄 ${f.split('/').pop()}</a>`).join('')}
+                </div>
+              ` : ''}
               <a href="/theory-detail.html?id=${t.id}" class="btn btn-primary">Изучить тему</a>
             </div>`
           ).join('');
         }
+      } catch (err) {
+        console.error(err);
+      }
+    }
       } catch (err) {
         console.error(err);
       }
