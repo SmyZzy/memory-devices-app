@@ -23,12 +23,14 @@ const theoryRoutes = require('./routes/theory');
 const testRoutes = require('./routes/test');
 const studentRoutes = require('./routes/student');
 const teacherRoutes = require('./routes/teacher');
+const healthRoutes = require('./routes/health');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/theory', theoryRoutes);
 app.use('/api/test', testRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/teacher', teacherRoutes);
+app.use('/api/health', healthRoutes);
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
